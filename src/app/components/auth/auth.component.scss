@@ -1,0 +1,46 @@
+.auth-container {
+    width: 100%;
+    height: 100%;
+    background-image: url('/assets/images/login-bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .login {
+        padding: 5rem 1rem 1rem 1rem;
+        width: 40%;
+        height: 100%;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+
+        ::ng-deep .p-iftalabel {
+            position: relative;
+
+            .icon {
+                position: absolute;
+                top: 70%;
+                transform: translateY(-50%);
+                right: 1rem;
+                font-size: 14px;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .auth-container {
+        overflow: hidden;
+        background-image: url('/assets/images/login-bg-mobile.jpg');
+
+        .login {
+            padding: 3rem 1rem 1rem 1rem;
+            width: 100%;
+            height: 60%;
+        }
+    }
+}

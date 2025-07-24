@@ -1,0 +1,61 @@
+/* You can add global styles to this file, and also import other style files */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: light;
+    }
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+
+    h1 {
+        margin: 0;
+    }
+
+    span {
+        font-size: 14px;
+    }
+
+    .pi {
+        font-size: 10px;
+    }
+}
+
+.size-14 {
+    font-size: 14px;
+}
+
+.size-12 {
+    font-size: 12px;
+}
+
+.size-10 {
+    font-size: 10px;
+}
+
+.red {
+    color: #dc2626;
+}
+
+.green {
+    color: #10b981;
+}
+
+.p-iftalabel {
+
+    input {
+        width: 100%;
+        font-size: 14px;
+    }
+
+    label {
+        font-size: 14px;
+    }
+}
+
