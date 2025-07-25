@@ -1,7 +1,9 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { AccessTokenType } from '../models/access-token.type';
+import { isPlatformBrowser } from '@angular/common';
+import { ResetPasswordResponseType } from '../models/reset-password-response.type';
 
 @Injectable({
     providedIn: 'root',
@@ -18,11 +20,35 @@ export class AuthService {
     private readonly _tokenKey = 'authToken';
 
     /**
+     * Platform id
+     */
+    private readonly _platformId = inject(PLATFORM_ID);
+
+    /**
+     * Http client
+     */
+    private readonly _http = inject(HttpClient);
+
+    /**
      * Observable is logged in
      */
     isLoggedIn$ = new BehaviorSubject<boolean>(this.hasToken());
 
-    constructor(private readonly http: HttpClient) {}
+    /**
+     * Observable is request password reset
+     */
+    private requestPasswordReset = new BehaviorSubject<boolean>(false);
+    requestPasswordReset$ = this.requestPasswordReset.asObservable();
+
+    constructor() {}
+
+    /**
+     * True if browser
+     * @private
+     */
+    private isBrowser(): boolean {
+        return isPlatformBrowser(this._platformId);
+    }
 
     /**
      * Login
@@ -30,13 +56,13 @@ export class AuthService {
      * @param password - Password
      */
     login(email: string, password: string): Observable<AccessTokenType> {
-        return this.http
-            .post<{
-                access_token: string;
-            }>(`${this._apiUrl}/login`, { email, password })
+        return this._http
+            .post<AccessTokenType>(`${this._apiUrl}/login`, { email, password })
             .pipe(
                 tap((response) => {
-                    localStorage.setItem(this._tokenKey, response.access_token);
+                    if (this.isBrowser()) {
+                        localStorage.setItem(this._tokenKey, response.access_token);
+                    }
                     this.isLoggedIn$.next(true);
                 }),
             );
@@ -45,8 +71,10 @@ export class AuthService {
     /**
      * Logout
      */
-    logout(): void {
-        localStorage.removeItem(this._tokenKey);
+    logout() {
+        if (this.isBrowser()) {
+            localStorage.removeItem(this._tokenKey);
+        }
         this.isLoggedIn$.next(false);
     }
 
@@ -54,7 +82,7 @@ export class AuthService {
      * Get token
      */
     getToken(): string | null {
-        return localStorage.getItem(this._tokenKey);
+        return this.isBrowser() ? localStorage.getItem(this._tokenKey) : null;
     }
 
     /**
@@ -62,6 +90,31 @@ export class AuthService {
      * @private
      */
     private hasToken(): boolean {
-        return !!localStorage.getItem(this._tokenKey);
+        return this.isBrowser() && !!localStorage.getItem(this._tokenKey);
+    }
+
+    /**
+     * Set the request password reset value
+     * @param requestPasswordReset - Request password reset value
+     */
+    setRequestPasswordReset(requestPasswordReset: boolean) {
+        this.requestPasswordReset.next(requestPasswordReset);
+    }
+
+    /**
+     * Create request to reset password
+     * @param email - User email
+     */
+    createRequestPasswordReset(email: string | undefined | null): Observable<ResetPasswordResponseType> {
+        return this._http.post<any>(`${this._apiUrl}/request-password-reset`, { email });
+    }
+
+    /**
+     * Update reset password
+     * @param token - User token
+     * @param newPassword - New password
+     */
+    updatePasswordReset(token: string | null, newPassword: string | null | undefined): Observable<ResetPasswordResponseType> {
+        return this._http.patch<any>(`${this._apiUrl}/reset-password`, { token, newPassword });
     }
 }

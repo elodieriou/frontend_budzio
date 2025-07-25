@@ -11,6 +11,7 @@ import { IftaLabel } from 'primeng/iftalabel';
 import { InputText } from 'primeng/inputtext';
 import { NgClass } from '@angular/common';
 import { PasswordValidator } from '../../validators/password.validators';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'bdz-login',
@@ -31,6 +32,9 @@ export class LoginComponent {
      * True if show password
      */
     isShowPassword: boolean = false;
+
+    constructor(private readonly authService: AuthService) {
+    }
 
     /**
      * Getter email control
@@ -70,10 +74,12 @@ export class LoginComponent {
     /**
      * Forgot password
      */
-    forgotPassword() {}
+    forgotPassword() {
+        this.authService.setRequestPasswordReset(true);
+    }
 
     /**
-     * On
+     * On login
      */
     onLogin() {}
 }
