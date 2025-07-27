@@ -15,6 +15,18 @@ export class UserService {
     constructor(private readonly http: HttpClient) {}
 
     /**
+     * Create a user
+     * @param firstname - Firstname
+     * @param lastname - Lastname
+     * @param email - Email
+     * @param password - Password
+     */
+    createUser(firstname: string, lastname: string, email: string, password: string): Observable<User> {
+        return this.http.post<User>(this._apiUrl, { firstname, lastname, email, password } );
+    }
+
+
+    /**
      * Get user
      * @param id - User id
      */

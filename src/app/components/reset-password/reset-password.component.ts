@@ -5,10 +5,12 @@ import { Button } from 'primeng/button';
 import { IftaLabel } from 'primeng/iftalabel';
 import { InputText } from 'primeng/inputtext';
 import { NgClass } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
 import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
+import { AbstractAuthComponent } from '../abstract-auth.component';
+import { UserService } from '../../services/user.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'bdz-reset-password',
@@ -24,7 +26,7 @@ import { Toast } from 'primeng/toast';
     templateUrl: './reset-password.component.html',
     styleUrl: './reset-password.component.scss'
 })
-export class ResetPasswordComponent implements  OnInit {
+export class ResetPasswordComponent extends AbstractAuthComponent implements  OnInit {
     /**
      * Reset password form
      */
@@ -52,10 +54,16 @@ export class ResetPasswordComponent implements  OnInit {
      */
     token: string | null = null;
 
-    constructor(private readonly route: ActivatedRoute,
-                private readonly authService: AuthService,
-                private readonly messageService: MessageService,
-                private readonly router: Router) {
+    constructor(userService: UserService,
+                messageService: MessageService,
+                router: Router,
+                route: ActivatedRoute,
+                authService: AuthService,) {
+        super(userService,
+            messageService,
+            router,
+            route,
+            authService,);
     }
 
     /**
@@ -120,7 +128,7 @@ export class ResetPasswordComponent implements  OnInit {
     /**
      * On reset password
      */
-    onReset() {
+    onResetPassword() {
         this.authService.updatePasswordReset(this.token, this.confirmPassword?.value).subscribe({
             next: (response) => {
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
@@ -129,19 +137,5 @@ export class ResetPasswordComponent implements  OnInit {
                 this.messageService.add({ severity: 'error', summary: 'Error', detail: error.error.message });
             }
         })
-    }
-
-    /**
-     * On close toast
-     */
-    onCloseToast() {
-        this.onLogin();
-    }
-
-    /**
-     * On navigate to login screen
-     */
-    onLogin() {
-        this.router.navigate(['/auth']);
     }
 }

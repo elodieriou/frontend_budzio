@@ -1,71 +1,73 @@
-<div class="login">
-    <h1>Budzio</h1>
-    <span class="pb-4">Je gère mon budget au jour le jour.</span>
+<div class="auth-container">
+    <div class="auth-content">
+        <h1>Budzio</h1>
+        <span class="pb-4">Je gère mon budget au jour le jour.</span>
 
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-        <!-- Email -->
-        <div>
-            <p-iftalabel>
-                <input pInputText id="email" autocomplete="off" formControlName="email"/>
-                <label for="email">Email *</label>
-            </p-iftalabel>
-            @if (email?.touched && email?.errors) {
-                <span class="size-10 red pl-1">L'email est obligatoire.</span>
-            }
-        </div>
-        <!-- Password -->
-        <div>
-            <p-iftalabel>
-                <input pInputText [type]="isShowPassword ? 'text' : 'password'" id="password" autocomplete="off" formControlName="password"/>
-                <label for="password">Mot de passe *</label>
-                <i (click)="toggleDisplayPassword()" class="icon pi" [ngClass]="{ 'pi-eye-slash': isShowPassword, 'pi-eye': !isShowPassword}"></i>
-            </p-iftalabel>
-            <div class="flex justify-content-between gap-1 pt-1">
-                @if (password?.touched && required) {
-                    <span class="size-10 red pl-1">Le mot de passe est obligatoire.</span>
+        <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onLogin()">
+            <!-- Email -->
+            <div>
+                <p-iftalabel>
+                    <input pInputText id="email" autocomplete="off" formControlName="email"/>
+                    <label for="email">Email *</label>
+                </p-iftalabel>
+                @if (email?.touched && email?.errors) {
+                    <span class="size-10 red pl-1">L'email est obligatoire.</span>
                 }
-                @if (!required) {
-                    <div class="flex flex-column gap-1 pl-1">
-                        <div class="check-password pt-1">
-                            <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasUpperCase, 'pi-check green': !weakPassword || weakPassword.hasUpperCase }"></i>
-                            <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasUpperCase, 'green': !weakPassword || weakPassword.hasUpperCase }">
+            </div>
+            <!-- Password -->
+            <div>
+                <p-iftalabel>
+                    <input pInputText [type]="isShowPassword ? 'text' : 'password'" id="password" autocomplete="off" formControlName="password"/>
+                    <label for="password">Mot de passe *</label>
+                    <i (click)="toggleDisplayPassword()" class="icon pi" [ngClass]="{ 'pi-eye-slash': isShowPassword, 'pi-eye': !isShowPassword}"></i>
+                </p-iftalabel>
+                <div class="flex justify-content-between gap-1 pt-1">
+                    @if (password?.touched && required) {
+                        <span class="size-10 red pl-1">Le mot de passe est obligatoire.</span>
+                    }
+                    @if (!required) {
+                        <div class="flex flex-column gap-1 pl-1">
+                            <div class="check-password pt-1">
+                                <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasUpperCase, 'pi-check green': !weakPassword || weakPassword.hasUpperCase }"></i>
+                                <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasUpperCase, 'green': !weakPassword || weakPassword.hasUpperCase }">
                             Au moins une majuscule est requise.
                         </span>
-                        </div>
-                        <div class="check-password">
-                            <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasLowerCase, 'pi-check green': !weakPassword || weakPassword.hasLowerCase }"></i>
-                            <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasLowerCase, 'green': !weakPassword || weakPassword.hasLowerCase }">
+                            </div>
+                            <div class="check-password">
+                                <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasLowerCase, 'pi-check green': !weakPassword || weakPassword.hasLowerCase }"></i>
+                                <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasLowerCase, 'green': !weakPassword || weakPassword.hasLowerCase }">
                             Au moins une minuscule est requise.
                         </span>
-                        </div>
-                        <div class="check-password">
-                            <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasNumber, 'pi-check green': !weakPassword || weakPassword.hasNumber }"></i>
-                            <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasNumber, 'green': !weakPassword || weakPassword.hasNumber }">
+                            </div>
+                            <div class="check-password">
+                                <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasNumber, 'pi-check green': !weakPassword || weakPassword.hasNumber }"></i>
+                                <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasNumber, 'green': !weakPassword || weakPassword.hasNumber }">
                             Au moins un chiffre est requis.
                         </span>
-                        </div>
-                        <div class="check-password">
-                            <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasSpecialChar, 'pi-check green': !weakPassword || weakPassword.hasSpecialChar }"></i>
-                            <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasSpecialChar, 'green': !weakPassword || weakPassword.hasSpecialChar }">
+                            </div>
+                            <div class="check-password">
+                                <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasSpecialChar, 'pi-check green': !weakPassword || weakPassword.hasSpecialChar }"></i>
+                                <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasSpecialChar, 'green': !weakPassword || weakPassword.hasSpecialChar }">
                             Au moins un caractère spécial est requis : (),.?
                         </span>
-                        </div>
-                        <div class="check-password">
-                            <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.isLong, 'pi-check green': !weakPassword || weakPassword.isLong }"></i>
-                            <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.isLong, 'green': !weakPassword || weakPassword.isLong }">
+                            </div>
+                            <div class="check-password">
+                                <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.isLong, 'pi-check green': !weakPassword || weakPassword.isLong }"></i>
+                                <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.isLong, 'green': !weakPassword || weakPassword.isLong }">
                             Au moins 10 caractères.
                         </span>
+                            </div>
                         </div>
-                    </div>
-                }
-                <span class="size-12 green cursor-pointer" (click)="forgotPassword()">J'ai oublié mon mot de passe !</span>
+                    }
+                    <span class="size-12 green cursor-pointer" (click)="forgotPassword()">J'ai oublié mon mot de passe !</span>
+                </div>
             </div>
-        </div>
-        <p-button label="Se connecter" />
-    </form>
+            <p-button type="submit" label="Se connecter" />
+        </form>
 
-    <div class="flex gap-1">
-        <span class="size-12">Vous n'avez pas encore de compte ?</span>
-        <span class="size-12 green cursor-pointer">S'inscrire !</span>
+        <div class="flex gap-1">
+            <span class="size-12">Vous n'avez pas encore de compte ?</span>
+            <span class="size-12 green cursor-pointer" (click)="onNavigateToSignup()">S'inscrire !</span>
+        </div>
     </div>
 </div>
