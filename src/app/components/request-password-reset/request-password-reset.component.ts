@@ -3,9 +3,12 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { IftaLabel } from 'primeng/iftalabel';
 import { InputText } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
-import { AuthService } from '../../services/auth.service';
 import { MessageService } from 'primeng/api';
 import { Toast } from 'primeng/toast';
+import { AbstractAuthComponent } from '../abstract-auth.component';
+import { UserService } from '../../services/user.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
     selector: 'bdz-request-password-reset',
@@ -20,7 +23,7 @@ import { Toast } from 'primeng/toast';
     templateUrl: './request-password-reset.component.html',
     styleUrl: './request-password-reset.component.scss'
 })
-export class RequestPasswordResetComponent {
+export class RequestPasswordResetComponent extends AbstractAuthComponent {
     /**
      * Request a password reset form
      */
@@ -28,7 +31,16 @@ export class RequestPasswordResetComponent {
         email: new FormControl('', [Validators.required, Validators.email]),
     });
 
-    constructor(private readonly authService: AuthService, private readonly messageService: MessageService) {
+    constructor(userService: UserService,
+                messageService: MessageService,
+                router: Router,
+                route: ActivatedRoute,
+                authService: AuthService,) {
+        super(userService,
+            messageService,
+            router,
+            route,
+            authService,);
     }
 
     /**
@@ -47,19 +59,5 @@ export class RequestPasswordResetComponent {
                 this.messageService.add({ severity: 'success', summary: 'Success', detail: response.message });
             }
         });
-    }
-
-    /**
-     * On close toast
-     */
-    onCloseToast() {
-        this.onLogin();
-    }
-
-    /**
-     * Come back to login screen
-     */
-    onLogin() {
-        this.authService.setRequestPasswordReset(false);
     }
 }

@@ -1,9 +1,13 @@
 import { Routes } from '@angular/router';
-import { AuthComponent } from './components/auth/auth.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
+import { SignupComponent } from './components/signup/signup.component';
+import { LoginComponent } from './components/login/login.component';
+import { RequestPasswordResetComponent } from './components/request-password-reset/request-password-reset.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'auth', pathMatch: 'full' },
-    { path: 'auth', component: AuthComponent },
+    { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
+    { path: 'auth/login', component: LoginComponent },
+    { path: 'auth/request-password-reset', component: RequestPasswordResetComponent },
     { path: 'auth/reset-password', component: ResetPasswordComponent },
+    { path: 'auth/signup', component: SignupComponent },
 ];

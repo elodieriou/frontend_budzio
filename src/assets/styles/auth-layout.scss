@@ -1,0 +1,27 @@
+@use "auth-mixins" as mixins;
+
+.auth-container {
+    @include mixins.auth-container;
+
+    .auth-content {
+        @include mixins.auth-content;
+
+        .auth-form {
+            @include mixins.auth-form;
+        }
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .auth-container {
+        @include mixins.auth-container-mobile;
+
+        .auth-content {
+            @include mixins.auth-content-mobile;
+
+            .auth-form {
+                @include mixins.auth-form-mobile;
+            }
+        }
+    }
+}
