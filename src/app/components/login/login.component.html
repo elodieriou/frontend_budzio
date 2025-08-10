@@ -25,44 +25,10 @@
                     @if (password?.touched && required) {
                         <span class="size-10 red pl-1">Le mot de passe est obligatoire.</span>
                     }
-                    @if (!required) {
-                        <div class="flex flex-column gap-1 pl-1">
-                            <div class="check-password pt-1">
-                                <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasUpperCase, 'pi-check green': !weakPassword || weakPassword.hasUpperCase }"></i>
-                                <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasUpperCase, 'green': !weakPassword || weakPassword.hasUpperCase }">
-                            Au moins une majuscule est requise.
-                        </span>
-                            </div>
-                            <div class="check-password">
-                                <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasLowerCase, 'pi-check green': !weakPassword || weakPassword.hasLowerCase }"></i>
-                                <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasLowerCase, 'green': !weakPassword || weakPassword.hasLowerCase }">
-                            Au moins une minuscule est requise.
-                        </span>
-                            </div>
-                            <div class="check-password">
-                                <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasNumber, 'pi-check green': !weakPassword || weakPassword.hasNumber }"></i>
-                                <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasNumber, 'green': !weakPassword || weakPassword.hasNumber }">
-                            Au moins un chiffre est requis.
-                        </span>
-                            </div>
-                            <div class="check-password">
-                                <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.hasSpecialChar, 'pi-check green': !weakPassword || weakPassword.hasSpecialChar }"></i>
-                                <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.hasSpecialChar, 'green': !weakPassword || weakPassword.hasSpecialChar }">
-                            Au moins un caractère spécial est requis : (),.?
-                        </span>
-                            </div>
-                            <div class="check-password">
-                                <i class="pi" [ngClass]="{ 'pi-times red': !weakPassword?.isLong, 'pi-check green': !weakPassword || weakPassword.isLong }"></i>
-                                <span class="size-10 pl-1" [ngClass]="{ 'red': !weakPassword?.isLong, 'green': !weakPassword || weakPassword.isLong }">
-                            Au moins 10 caractères.
-                        </span>
-                            </div>
-                        </div>
-                    }
                     <span class="size-12 green cursor-pointer" (click)="forgotPassword()">J'ai oublié mon mot de passe !</span>
                 </div>
             </div>
-            <p-button type="submit" label="Se connecter" />
+            <p-button type="submit" label="Se connecter" icon="pi pi-check" [loading]="isLoading" />
         </form>
 
         <div class="flex gap-1">

@@ -1,9 +1,12 @@
 import { inject, Injectable, PLATFORM_ID } from '@angular/core';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, forkJoin, from, Observable, switchMap, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { AccessTokenType } from '../models/access-token.type';
+import { LoginType } from '../models/login.type';
 import { isPlatformBrowser } from '@angular/common';
 import { ResetPasswordResponseType } from '../models/reset-password-response.type';
+import { Router } from '@angular/router';
+import { UserStorageService } from './user-storage.service';
+import { AuthStorageService } from './auth-storage.service';
 
 @Injectable({
     providedIn: 'root',
@@ -12,12 +15,7 @@ export class AuthService {
     /**
      * Api url
      */
-    private readonly _apiUrl = 'http://localhost:3000/auth';
-
-    /**
-     * Auth token
-     */
-    private readonly _tokenKey = 'authToken';
+    private readonly _apiUrl = 'http://192.168.1.16:3000/auth';
 
     /**
      * Platform id
@@ -32,15 +30,22 @@ export class AuthService {
     /**
      * Observable is logged in
      */
-    isLoggedIn$ = new BehaviorSubject<boolean>(this.hasToken());
+    private _isLoggedIn = new BehaviorSubject<boolean>(false);
+    isLoggedIn$ = this._isLoggedIn.asObservable();
+
+    constructor(private readonly router: Router,
+                private readonly userStorageService: UserStorageService,
+                private readonly authStorageService: AuthStorageService) {
+        this.checkToken();
+    }
 
     /**
-     * Observable is request password reset
+     * Check token
      */
-    private requestPasswordReset = new BehaviorSubject<boolean>(false);
-    requestPasswordReset$ = this.requestPasswordReset.asObservable();
-
-    constructor() {}
+    async checkToken() {
+        const hasToken = await this.hasToken();
+        this._isLoggedIn.next(hasToken);
+    }
 
     /**
      * True if browser
@@ -55,17 +60,22 @@ export class AuthService {
      * @param email - Email
      * @param password - Password
      */
-    login(email: string, password: string): Observable<AccessTokenType> {
-        return this._http
-            .post<AccessTokenType>(`${this._apiUrl}/login`, { email, password })
-            .pipe(
-                tap((response) => {
-                    if (this.isBrowser()) {
-                        localStorage.setItem(this._tokenKey, response.access_token);
-                    }
-                    this.isLoggedIn$.next(true);
-                }),
-            );
+    login(email: string, password: string): Observable<LoginType> {
+        return this._http.post<LoginType>(`${this._apiUrl}/login`, { email, password }).pipe(
+            switchMap(response => {
+                if (this.isBrowser()) {
+                    return from(this.authStorageService.setAuth(response.access_token)).pipe(
+                        tap(() => {
+                            this._isLoggedIn.next(true);
+                        }),
+                        switchMap(() => [response])
+                    );
+                } else {
+                    this._isLoggedIn.next(true);
+                    return [response];
+                }
+            })
+        );
     }
 
     /**
@@ -73,32 +83,28 @@ export class AuthService {
      */
     logout() {
         if (this.isBrowser()) {
-            localStorage.removeItem(this._tokenKey);
+            forkJoin([
+                from(this.authStorageService.removeAuth()),
+                from(this.userStorageService.removeUser())
+            ]).subscribe({
+                next: () => {
+                    this._isLoggedIn.next(false);
+                    this.router.navigate(['/auth/login']);
+                }
+            })
         }
-        this.isLoggedIn$.next(false);
-    }
-
-    /**
-     * Get token
-     */
-    getToken(): string | null {
-        return this.isBrowser() ? localStorage.getItem(this._tokenKey) : null;
     }
 
     /**
      * Local storage has token
      * @private
      */
-    private hasToken(): boolean {
-        return this.isBrowser() && !!localStorage.getItem(this._tokenKey);
-    }
-
-    /**
-     * Set the request password reset value
-     * @param requestPasswordReset - Request password reset value
-     */
-    setRequestPasswordReset(requestPasswordReset: boolean) {
-        this.requestPasswordReset.next(requestPasswordReset);
+    private async hasToken(): Promise<boolean> {
+        if (!this.isBrowser()) {
+            return false;
+        }
+        const auth = await this.authStorageService.getAuth();
+        return !!auth;
     }
 
     /**

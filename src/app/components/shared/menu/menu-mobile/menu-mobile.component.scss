@@ -1,0 +1,40 @@
+@use '../../../../../assets/styles/colors' as colors;
+
+.menu-container {
+    width: 100%;
+    height: 100%;
+    box-shadow:  0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    padding: 10px;
+    display: flex;
+    justify-content: space-evenly;
+
+    .menu-item {
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: .25rem;
+        color: colors.$vert-eau;
+
+        &:hover {
+            color: colors.$vert-turquoise-clair
+        }
+
+        i {
+
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        span {
+            font-size: 10px;
+        }
+    }
+
+
+}

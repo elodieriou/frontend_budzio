@@ -16,6 +16,9 @@ import { UserService } from '../../services/user.service';
 import { MessageService } from 'primeng/api';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { LoginType } from '../../models/login.type';
+import { from, switchMap } from 'rxjs';
+import { UserStorageService } from '../../services/user-storage.service';
 
 @Component({
     selector: 'bdz-login',
@@ -33,16 +36,22 @@ export class LoginComponent extends AbstractAuthComponent {
         password: new FormControl('', [Validators.required, PasswordValidator.strongPassword]),
     });
 
+    /**
+     * True if loading login in
+     */
+    isLoading: boolean = false;
+
     constructor(userService: UserService,
                 messageService: MessageService,
                 router: Router,
                 route: ActivatedRoute,
-                authService: AuthService,) {
+                authService: AuthService,
+                protected userStorageService: UserStorageService) {
         super(userService,
             messageService,
             router,
             route,
-            authService,);
+            authService);
     }
 
     /**
@@ -84,7 +93,25 @@ export class LoginComponent extends AbstractAuthComponent {
      * On login
      */
     onLogin() {
-
+        this.isLoading = true;
+        const email = this.email?.value;
+        const password = this.password?.value;
+        if (email && password) {
+            this.authService.login(email, password).pipe(
+                switchMap((login: LoginType) =>
+                    from(this.userStorageService.setUser(login.userId.toString()))
+                )
+            ).subscribe({
+                next: () => {
+                    this.router.navigate(['/dashboard']);
+                    this.isLoading = false;
+                    this.userService.storeCurrentUser();
+                },
+                error: () => {
+                    this.isLoading = false;
+                }
+            });
+        }
     }
 
     /**
