@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { User } from '../models/user.type';
+import { UserStorageService } from './user-storage.service';
 
 @Injectable({
     providedIn: 'root',
@@ -10,9 +11,32 @@ export class UserService {
     /**
      * Api url
      */
-    private readonly _apiUrl = 'http://localhost:3000/user';
+    private readonly _apiUrl = 'http://192.168.1.16:3000/user';
 
-    constructor(private readonly http: HttpClient) {}
+    /**
+     * Current user connected
+     */
+    private _currentUser = new BehaviorSubject<User | undefined>(undefined);
+    currentUser$ = this._currentUser.asObservable();
+
+    constructor(private readonly http: HttpClient,
+                private readonly userStorageService: UserStorageService) {
+        this.storeCurrentUser();
+    }
+
+    /**
+     * Store current user
+     */
+    async storeCurrentUser() {
+        const userId = await this.userStorageService.getUser();
+        if (userId) {
+            this.getUser(+userId).subscribe({
+                next: (user: User) => {
+                    this._currentUser.next(user);
+                }
+            });
+        }
+    }
 
     /**
      * Create a user
